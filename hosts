@@ -1,0 +1,15 @@
+[cluster_master]
+pi-a ip=10.10.1.10
+
+[cluster_worker]
+pi-b ip=10.10.1.11
+pi-c ip=10.10.1.12
+pi-d ip=10.10.1.13
+
+[cluster:children]
+cluster_master
+cluster_worker
+
+[cluster:vars]
+ansible_user=charmixer
+ansible_connection=ssh
