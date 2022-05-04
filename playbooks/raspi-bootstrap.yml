@@ -1,0 +1,41 @@
+# export ANSIBLE_INVENTORY=$(readlink -f hosts)
+# ansible-playbook playbooks/raspi-bootstrap.yml
+
+---
+- hosts: cluster
+  gather_facts: yes
+
+  vars:
+    hostname: raspi
+
+    timezone: "Europe/Copenhagen"
+
+    locale: "en_DK.UTF-8"
+
+    apt_packages:
+    - git
+    - curl
+
+
+  tasks:
+
+    # - import_tasks: ../tasks/hostname.yml
+    # tags: [setup, hostname]
+
+    # - import_tasks: ../tasks/timezone.yml
+    # tags: [setup, timezone]
+
+    # - import_tasks: ../tasks/locale.yml
+    # tags: [setup, locale]
+
+    # - import_tasks: ../tasks/keyboard.yml
+    # tags: [setup, keyboard]
+
+  - import_tasks: ../tasks/apt.yml
+    tags: [setup, apt]
+
+    # - import_tasks: ../tasks/zsh.yml
+    # tags: [setup, zsh]
+
+    # - import_tasks: ../tasks/docker.yml
+    # tags: [setup, docker]
