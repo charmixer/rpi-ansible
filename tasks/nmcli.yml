@@ -1,0 +1,8 @@
+
+
+- name: Add zone
+    community.general.nmcli:
+      type: ethernet
+      conn_name: my-eth1
+      zone: external
+      state: present

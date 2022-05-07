@@ -6,18 +6,25 @@
   gather_facts: yes
 
   vars:
-    hostname: raspi
-
     timezone: "Europe/Copenhagen"
-
     locale: "en_DK.UTF-8"
-
     apt_packages:
     - git
     - curl
 
-
   tasks:
+
+    #- debug: var=ansible_default_ipv4.address
+    #- debug: msg={{ net_ip }}
+
+    - name: Setup static network interface
+      become: yes
+      ansible.builtin.template:
+        src: ../templates/dhcpcd.j2
+        dest: /etc/dhcpcd.conf
+        owner: charmixer
+        group: charmixer
+        mode: '0644'
 
     # - import_tasks: ../tasks/hostname.yml
     # tags: [setup, hostname]
@@ -31,8 +38,8 @@
     # - import_tasks: ../tasks/keyboard.yml
     # tags: [setup, keyboard]
 
-  - import_tasks: ../tasks/apt.yml
-    tags: [setup, apt]
+    - import_tasks: ../tasks/apt.yml
+      tags: [setup, apt]
 
     # - import_tasks: ../tasks/zsh.yml
     # tags: [setup, zsh]
