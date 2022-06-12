@@ -1,9 +1,0 @@
-auto lo
-
-iface lo inet loopback
-
-iface eth0 inet static
-  address {{ net_ip }}/24
-  netmask {{ net_mask }}
-  gateway {{ net_gw }}
-  dns-nameservers {{ net_dns | join(' ') }}
