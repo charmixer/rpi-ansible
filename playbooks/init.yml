@@ -1,0 +1,12 @@
+# export ANSIBLE_INVENTORY=$(readlink -f hosts)
+# ansible-playbook playbooks/raspi-bootstrap.yml
+
+---
+- hosts: all
+  gather_facts: yes
+
+  tasks:
+
+    - name: Install Avahi Daemon (Ubuntu)
+      include_tasks:  ../tasks/avahi-daemon-ubuntu.yml
+      when: ansible_facts['distribution'] == "Ubuntu"

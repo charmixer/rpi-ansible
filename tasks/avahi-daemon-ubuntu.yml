@@ -1,0 +1,14 @@
+- name: install avahi-daemon
+  become: yes
+  apt:
+    state: latest
+    update_cache: yes
+    pkg:
+    - avahi-daemon
+
+- name: ensure avahi-daemon is started & enabled
+  become: yes
+  service:
+    name: avahi-daemon
+    state: started
+    enabled: yes

@@ -7,7 +7,10 @@ pi-c net_ip=10.10.1.12
 pi-d net_ip=10.10.1.13
 
 [cluster_db]
-db net_ip=10.10.1.20 ansible_host=10.10.1.20
+db net_ip=10.10.1.20
+
+[cluster_nas]
+nas net_ip=10.10.1.30
 
 [cluster:children]
 cluster_master
@@ -17,6 +20,7 @@ cluster_worker
 cluster_master
 cluster_worker
 cluster_db
+cluster_nas
 
 [all:vars]
 ansible_user=charmixer
