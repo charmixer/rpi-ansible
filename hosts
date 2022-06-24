@@ -29,3 +29,9 @@ ansible_connection=ssh
 net_gw=10.10.1.1
 net_mask=255.255.255.0
 net_dns=["10.0.0.10"]
+
+k3s_version         = v1.24.1+k3s1
+systemd_dir         = /etc/systemd/system
+master_ip           = "{{ hostvars[groups['cluster_master'][0]]['net_ip'] | default(groups['cluster_master'][0]) }}"
+extra_server_args   = ""
+extra_agent_args    = ""
