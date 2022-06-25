@@ -1,3 +1,5 @@
+---
+
 - name: install avahi-daemon
   become: yes
   apt:
