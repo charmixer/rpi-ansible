@@ -1,0 +1,36 @@
+---
+
+- name: get Raspberry Pi revision info
+  command: awk '/^Model/ {print $3}' /proc/cpuinfo
+  register: cpu_model
+  changed_when: False
+  check_mode: no
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Enable IPv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: yes
+  when: ansible_all_ipv6_addresses|bool
+
+- name: Activating cgroup support
+  lineinfile:
+    path: /boot/cmdline.txt
+    regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+    backrefs: true
+  when: >
+    (
+      cpu_model.stdout == "Raspberry"
+      and ansible_facts.lsb.id|default("") == "Debian"
+      and ansible_facts.lsb.major_release|default("") == "11"
+    )
+  notify: reboot

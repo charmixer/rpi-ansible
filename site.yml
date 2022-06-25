@@ -1,0 +1,53 @@
+---
+
+- hosts: all
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: net/static
+
+- hosts: nas
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: mrlesmithjr.mdadm
+  vars:
+    mdadm_arrays:
+      - name: md0
+        devices:
+          - /dev/sda1
+          - /dev/sdb1
+        level: '1'
+        filesystem: 'ext4'
+        mountpoint: '/mnt/storage'
+        state: 'present'
+
+- hosts: db
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: disk/mount
+    - role: docker
+  vars:
+    mounts:
+      - path: /mnt/storage
+        guid: 'f143b6c9-2ffa-4baa-8dec-eab056948dcc'
+        fs: "ext4"
+        state: "present"
+
+- hosts: cluster
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: k3s/prereq
+    - role: k3s/download
+
+- hosts: cluster_master
+  become: yes
+  roles:
+    - role: k3s/master
+
+- hosts: cluster_worker
+  become: yes
+  roles:
+    - role: k3s/worker

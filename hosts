@@ -1,15 +1,37 @@
 [cluster_master]
-pi-a ip=10.10.1.10
+pi-a.local net_ip=10.10.1.10
 
 [cluster_worker]
-pi-b ip=10.10.1.11
-pi-c ip=10.10.1.12
-pi-d ip=10.10.1.13
+pi-b.local net_ip=10.10.1.11
+pi-c.local net_ip=10.10.1.12
+pi-d.local net_ip=10.10.1.13
+
+[db]
+db.local net_ip=10.10.1.20
+
+[nas]
+nas.local net_ip=10.10.1.30
 
 [cluster:children]
 cluster_master
 cluster_worker
 
-[cluster:vars]
+[all:children]
+cluster_master
+cluster_worker
+db
+nas
+
+[all:vars]
 ansible_user=charmixer
 ansible_connection=ssh
+
+net_gw=10.10.1.1
+net_mask=255.255.255.0
+net_dns=["10.0.0.10"]
+
+k3s_version         = v1.24.1+k3s1
+systemd_dir         = /etc/systemd/system
+master_ip           = "{{ hostvars[groups['cluster_master'][0]]['net_ip'] | default(groups['cluster_master'][0]) }}"
+extra_server_args   = ""
+extra_agent_args    = ""

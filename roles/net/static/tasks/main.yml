@@ -1,0 +1,31 @@
+---
+
+- name: Setup static network interface (dhcpcd)
+  become: yes
+  ansible.builtin.template:
+    src: dhcpcd.j2
+    dest: /etc/dhcpcd.conf
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  when: >
+    (
+      ansible_facts.lsb.id == "Debian" and
+      ansible_facts.lsb.major_release == "11"
+    )
+
+- name: Setup static network interface (netplan)
+  become: yes
+  ansible.builtin.template:
+    src: netplan.j2
+    dest: /etc/netplan/01-netcfg.yaml
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  when: >
+    (
+      ansible_facts.lsb.id == "Ubuntu" and (
+        ansible_facts.lsb.major_release == "20" or
+        ansible_facts.lsb.major_release == "22"
+      )
+    )
