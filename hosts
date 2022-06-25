@@ -1,16 +1,16 @@
 [cluster_master]
-pi-a net_ip=10.10.1.10
+pi-a.local net_ip=10.10.1.10
 
 [cluster_worker]
-pi-b net_ip=10.10.1.11
-pi-c net_ip=10.10.1.12
-pi-d net_ip=10.10.1.13
+pi-b.local net_ip=10.10.1.11
+pi-c.local net_ip=10.10.1.12
+pi-d.local net_ip=10.10.1.13
 
-[cluster_db]
-db net_ip=10.10.1.20
+[db]
+db.local net_ip=10.10.1.20
 
-[cluster_nas]
-nas net_ip=10.10.1.30
+[nas]
+nas.local net_ip=10.10.1.30
 
 [cluster:children]
 cluster_master
@@ -19,8 +19,8 @@ cluster_worker
 [all:children]
 cluster_master
 cluster_worker
-cluster_db
-cluster_nas
+db
+nas
 
 [all:vars]
 ansible_user=charmixer

@@ -1,0 +1,14 @@
+---
+
+- name: setup raid
+  import_role:
+    name: ansible-mdadm
+  vars:
+    mdadm_arrays:
+      - name: md0
+        devices:
+          - /dev/sda1
+          - /dev/sdb1
+        filesystem: 'ext4'
+        mountpoint: '/mnt/storage'
+        state: 'present'

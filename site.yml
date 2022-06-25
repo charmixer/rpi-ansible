@@ -6,6 +6,22 @@
   roles:
     - role: net/static
 
+- hosts: nas
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: mrlesmithjr.mdadm
+  vars:
+    mdadm_arrays:
+      - name: md0
+        devices:
+          - /dev/sda1
+          - /dev/sdb1
+        level: '1'
+        filesystem: 'ext4'
+        mountpoint: '/mnt/storage'
+        state: 'present'
+
 - hosts: db
   gather_facts: yes
   become: yes
