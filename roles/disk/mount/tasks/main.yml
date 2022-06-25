@@ -1,15 +1,10 @@
 ---
 
-- name: Setup static network interface (dhcpcd)
-  become: yes
-  ansible.builtin.template:
-    src: dhcpcd.j2
-    dest: /etc/dhcpcd.conf
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_gid }}"
-    mode: '0644'
-  when: >
-    (
-      ansible_facts.lsb.id == "Debian" and
-      ansible_facts.lsb.major_release == "11"
-    )
+- name: Mount up device by UUID
+  become: true
+  ansible.posix.mount:
+    path: "{{ item.path }}"
+    src: "UUID={{ item.guid }}"
+    fstype: "{{ item.fs }}"
+    state: "{{ item.state }}"
+  with_items: "{{ mounts }}"

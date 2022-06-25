@@ -26,7 +26,14 @@
   gather_facts: yes
   become: yes
   roles:
+    - role: disk/mount
     - role: docker
+  vars:
+    mounts:
+      - path: /mnt/storage
+        guid: 'f143b6c9-2ffa-4baa-8dec-eab056948dcc'
+        fs: "ext4"
+        state: "present"
 
 - hosts: cluster
   gather_facts: yes
