@@ -1,0 +1,12 @@
+---
+
+- name: run postgres container
+  community.docker.docker_container:
+    name: db-postgres-{{ item.name }}
+    image: "postgres:{{ item.version }}"
+    state: present
+    networks:
+      - name: "{{ item.network }}"
+    ports:
+      - "{{ item.port }}:{{ item.port }}"
+  with_items: "{{ postgres_config }}"
