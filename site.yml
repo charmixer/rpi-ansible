@@ -11,6 +11,8 @@
   become: yes
   roles:
     - role: mrlesmithjr.mdadm
+    - role: docker/install
+    - role: docker/registry
   vars:
     mdadm_arrays:
       - name: md0
@@ -21,6 +23,12 @@
         filesystem: 'ext4'
         mountpoint: '/mnt/storage'
         state: 'present'
+  vars:
+    mounts:
+    registry_config:
+      - name: main
+        network: registry_net
+        port: 5000
 
 - hosts: db
   gather_facts: yes

@@ -22,7 +22,7 @@
     networks:
       - name: "{{ item.network }}"
     ports:
-      - "{{ item.port }}:{{ item.port }}"
+      - "{{ item.port }}:5432"
     env:
       POSTGRES_HOST_AUTH_METHOD: trust # todo https://docs.ansible.com/ansible/latest/collections/ansible/builtin/password_lookup.html
     mounts:

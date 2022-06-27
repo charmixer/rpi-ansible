@@ -1,0 +1,30 @@
+---
+
+- name: create network
+  community.docker.docker_network:
+    name: "{{ item.network }}"
+  with_items: "{{ registry_config }}"
+
+- name: create mount directory if it does not exist
+  ansible.builtin.file:
+    path: /mnt/storage/registry/{{ item.name }}
+    state: directory
+    mode: '0760'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+  with_items: "{{ registry_config }}"
+
+- name: run registry container
+  community.docker.docker_container:
+    name: registry-{{ item.name }}
+    image: "registry:2"
+    state: started
+    networks:
+      - name: "{{ item.network }}"
+    ports:
+      - "{{ item.port }}:5000"
+    mounts:
+      - source: "/mnt/storage/registry/{{ item.name }}"
+        target: "/var/lib/registry"
+        type: bind
+  with_items: "{{ registry_config }}"
