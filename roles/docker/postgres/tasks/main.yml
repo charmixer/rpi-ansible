@@ -5,6 +5,15 @@
     name: "{{ item.network }}"
   with_items: "{{ postgres_config }}"
 
+- name: create mount directory if it does not exist
+  ansible.builtin.file:
+    path: /mnt/storage/postgres/{{ item.name }}
+    state: directory
+    mode: '0760'
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+  with_items: "{{ postgres_config }}"
+
 - name: run postgres container
   community.docker.docker_container:
     name: db-postgres-{{ item.name }}
@@ -16,4 +25,8 @@
       - "{{ item.port }}:{{ item.port }}"
     env:
       POSTGRES_HOST_AUTH_METHOD: trust # todo https://docs.ansible.com/ansible/latest/collections/ansible/builtin/password_lookup.html
+    mounts:
+      - source: "/mnt/storage/postgres/{{ item.name }}"
+        target: "/var/lib/postgresql/data"
+        type: bind
   with_items: "{{ postgres_config }}"
