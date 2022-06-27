@@ -1,12 +1,19 @@
 ---
 
+- name: create network
+  community.docker.docker_network:
+    name: "{{ item.network }}"
+  with_items: "{{ postgres_config }}"
+
 - name: run postgres container
   community.docker.docker_container:
     name: db-postgres-{{ item.name }}
     image: "postgres:{{ item.version }}"
-    state: present
+    state: started
     networks:
       - name: "{{ item.network }}"
     ports:
       - "{{ item.port }}:{{ item.port }}"
+    env:
+      POSTGRES_HOST_AUTH_METHOD: trust # todo https://docs.ansible.com/ansible/latest/collections/ansible/builtin/password_lookup.html
   with_items: "{{ postgres_config }}"

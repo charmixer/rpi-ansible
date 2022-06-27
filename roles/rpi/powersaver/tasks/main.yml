@@ -1,0 +1,24 @@
+---
+
+- name: get Raspberry Pi revision info
+  command: awk '/^Model/ {print $3}' /proc/cpuinfo
+  register: cpu_model
+  changed_when: False
+  check_mode: no
+
+- name: turn off usb power
+  ansible.builtin.shell: echo '1-1' |sudo tee /sys/bus/usb/drivers/usb/unbind || true
+  when: cpu_model.stdout == "Raspberry"
+
+- name: turn off hdmi
+  ansible.builtin.shell: sudo /opt/vc/bin/tvservice -o || true
+  when: cpu_model.stdout == "Raspberry"
+
+- name: Activating cgroup support
+  lineinfile:
+    path: /boot/cmdline.txt
+    regexp: '^((?!.*\dtoverlay=pi3-disable-wifi dtoverlay=pi3-disable-bt\b).*)$'
+    line: '\1 dtoverlay=pi3-disable-wifi dtoverlay=pi3-disable-bt'
+    backrefs: true
+  when: cpu_model.stdout == "Raspberry"
+  notify: reboot

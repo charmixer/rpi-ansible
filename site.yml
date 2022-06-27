@@ -27,18 +27,25 @@
   become: yes
   roles:
     - role: disk/mount
-    - role: docker
+    - role: docker/install
+    - role: docker/postgres
   vars:
     mounts:
       - path: /mnt/storage
         guid: 'f143b6c9-2ffa-4baa-8dec-eab056948dcc'
         fs: "ext4"
         state: "present"
+    postgres_config:
+      - name: main
+        version: 14
+        network: db_net
+        port: 5432
 
 - hosts: cluster
   gather_facts: yes
   become: yes
   roles:
+    - role: rpi/powersaver
     - role: k3s/prereq
     - role: k3s/download
 
