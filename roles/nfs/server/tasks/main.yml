@@ -1,0 +1,45 @@
+---
+
+- name: install dependencies
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    pkg:
+    - nfs-kernel-server
+
+- name: create nfs directory if it does not exist
+  ansible.builtin.file:
+    path: /mnt/storage/nfs/{{ item.name }}
+    state: directory
+    mode: '0766'
+    owner: "nobody"
+    group: "nogroup"
+  with_items: "{{ nfs_config }}"
+
+- name: setup exports
+  become: yes
+  ansible.builtin.template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  vars:
+    root: "/mnt/storage/nfs/"
+    exports: "{{ nfs_config }}"
+  register: exports
+
+- name: export mounts
+  become: yes
+  shell: exportfs -a
+  when: exports.changed
+
+
+- name: ensure nfs kernel server is running & enabled
+  become: yes
+  service:
+    name: nfs-kernel-server
+    state: restarted
+    enabled: yes
+  when: exports.changed

@@ -1,0 +1,3 @@
+{% for export in exports %}
+{{ root }}{{ export.name }}{% for client in export.clients %} {{ client.cidr }}({{ client.opts|default("ro,sync,no_root_squash,no_subtree_check") | join(',') }}){% endfor %}
+{% endfor %}

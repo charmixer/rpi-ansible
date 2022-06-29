@@ -1,0 +1,9 @@
+---
+
+- name: install dependencies
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    pkg:
+    - nfs-common

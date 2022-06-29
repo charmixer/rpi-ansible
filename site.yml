@@ -11,6 +11,7 @@
   become: yes
   roles:
     - role: mrlesmithjr.mdadm
+    - role: nfs/server
     - role: docker/install
     - role: docker/registry
   vars:
@@ -23,26 +24,38 @@
         filesystem: 'ext4'
         mountpoint: '/mnt/storage'
         state: 'present'
-  vars:
-    mounts:
     registry_config:
       - name: main
         network: registry_net
         port: 5000
+    nfs_config:
+      - name: cluster
+        clients:
+          - cidr: 10.10.1.20
+            opts: ["rw", "sync", "no_root_squash", "no_subtree_check"]
+          #- cidr: 10.10.1.11
+            #opts: ["rw", "sync", "no_root_squash", "no_subtree_check"]
 
 - hosts: db
   gather_facts: yes
   become: yes
   roles:
+    - role: nfs/client
     - role: disk/mount
     - role: docker/install
     - role: docker/postgres
   vars:
     mounts:
       - path: /mnt/storage
-        guid: 'f143b6c9-2ffa-4baa-8dec-eab056948dcc'
+        src: 'UUID=f143b6c9-2ffa-4baa-8dec-eab056948dcc'
         fs: "ext4"
         state: "present"
+      - path: /mnt/nfs/tmp
+        src: 10.10.1.30:/mnt/storage/nfs/cluster # TODO get from configs
+        fs: "nfs"
+        state: "mounted"
+        opts: "defaults"
+        permission: "u=rwx,g=r"
     postgres_config:
       - name: main
         version: 14

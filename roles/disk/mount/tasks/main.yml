@@ -1,10 +1,20 @@
 ---
 
-- name: Mount up device by UUID
+- name: create directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: '0766'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user_group }}"
+  with_items: "{{ mounts }}"
+
+- name: mount up device
   become: true
   ansible.posix.mount:
     path: "{{ item.path }}"
-    src: "UUID={{ item.guid }}"
+    src: "{{ item.src }}"
     fstype: "{{ item.fs }}"
     state: "{{ item.state }}"
+    opts: "{{ item.opts|default('') }}"
   with_items: "{{ mounts }}"
